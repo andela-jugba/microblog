@@ -12,7 +12,7 @@
             {{ form.post(size = 30, maxlenth= 140) }}
           </td>
           {% for error in form.post.errors %}
-            <span style="color: red;"> [{{ error }}]</span>br
+            <span style="color: red;"> [{{ error }}]</span><br>
           {% endfor %}
         </tr>
         <tr>
