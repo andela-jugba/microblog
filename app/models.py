@@ -1,5 +1,12 @@
-from app import db
+from app import db, app
+import sys
 from hashlib import md5
+
+if sys.version_info >= (4, 0):
+    enable_search = False
+else:
+    enable_search = True
+    import flask.ext.whooshalchemy as whooshalchemy
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -61,7 +68,7 @@ class User(db.Model):
 
     def is_following(self, user):
         return self.followed.filter(followers.c.followed_id == user.id).count() > 0
-        
+
     def followed_posts(self):
         return Post.query.join(followers,(followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.timestamp.desc())
 
@@ -72,6 +79,8 @@ class User(db.Model):
         return '<User %r>'% (self.nickname)
 
 class Post(db.Model):
+    __searchable__ = ['body']
+
     id = db.Column(db.Integer, primary_key= True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
@@ -79,3 +88,6 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % (self.body)
+
+if enable_search:
+    whooshalchemy.whoosh_index(app, Post)

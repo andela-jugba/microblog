@@ -18,6 +18,9 @@ lm.login_view = 'login'
 
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
+from flask.ext.mail import Mail
+mail = Mail(app)
+
 from app import views, models
 
 # send mail to ADMINS when error occurs in production
